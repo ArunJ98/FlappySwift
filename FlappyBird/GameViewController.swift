@@ -32,8 +32,11 @@ extension SKNode {
 class GameViewController: UIViewController {
 
     override func viewDidLoad() {
-        super.viewDidLoad()
-
+        Skillz.skillzInstance().launch()
+        super.viewDidLoad()        
+    }
+    
+    func startGame() {
         if let scene = GameScene.unarchiveFromFile("GameScene") as? GameScene {
             // Configure the view.
             let skView = self.view as! SKView
@@ -51,15 +54,11 @@ class GameViewController: UIViewController {
     }
 
     override var shouldAutorotate : Bool {
-        return true
+        return false
     }
 
     override var supportedInterfaceOrientations : UIInterfaceOrientationMask {
-        if UIDevice.current.userInterfaceIdiom == .phone {
-            return UIInterfaceOrientationMask.allButUpsideDown
-        } else {
-            return UIInterfaceOrientationMask.all
-        }
+        return UIInterfaceOrientationMask.portrait
     }
 
     override func didReceiveMemoryWarning() {

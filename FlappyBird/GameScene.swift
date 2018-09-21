@@ -197,12 +197,20 @@ class GameScene: SKScene, SKPhysicsContactDelegate{
         // Reset _canRestart
         canRestart = false
         
-        // Reset score
-        score = 0
-        scoreLabelNode.text = String(score)
-        
-        // Restart animation
-        moving.speed = 1
+        //  Converted to Swift 4 by Swiftify v4.1.6809 - https://objectivec2swift.com/
+        if Skillz.skillzInstance().tournamentIsInProgress {
+            // The game ended and it was in a Skillz tournament,
+            // so report the score and go back to Skillz.
+            Skillz.skillzInstance().displayTournamentResults(withScore: score as NSNumber, withCompletion: {
+                // Reset score
+                self.score = 0
+                self.scoreLabelNode.text = String(self.score)
+                
+                // Restart animation
+                self.moving.speed = 1
+                print("Reporting score to Skillz…")
+            })
+        }
     }
     override func touchesBegan(_ touches: Set<UITouch>, with event: UIEvent?) {
         if moving.speed > 0  {
@@ -226,6 +234,8 @@ class GameScene: SKScene, SKPhysicsContactDelegate{
             if ( contact.bodyA.categoryBitMask & scoreCategory ) == scoreCategory || ( contact.bodyB.categoryBitMask & scoreCategory ) == scoreCategory {
                 // Bird has contact with score entity
                 score += 1
+                Skillz.skillzInstance().updatePlayersCurrentScore(score as NSNumber)
+                
                 scoreLabelNode.text = String(score)
                 
                 // Add a little visual feedback for the score increment
