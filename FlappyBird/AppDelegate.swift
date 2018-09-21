@@ -11,7 +11,7 @@ import Skillz
 import SpriteKit
 
 @UIApplicationMain
-class AppDelegate: UIResponder, UIApplicationDelegate, SkillzBaseDelegate {
+class AppDelegate: UIResponder, UIApplicationDelegate, SkillzDelegate {
                             
     var window: UIWindow?
     
@@ -35,6 +35,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate, SkillzBaseDelegate {
         // the game is ready for release to the AppStore
         
         Skillz.skillzInstance().initWithGameId("5226", for: delegate, with: SkillzEnvironment.sandbox, allowExit: false)
+        Skillz.skillzInstance().launch()
         return true
     }
 
@@ -81,11 +82,9 @@ class AppDelegate: UIResponder, UIApplicationDelegate, SkillzBaseDelegate {
             print("Game Parameters: \(aParameters)")
         }
         print("Now starting a game…")
-                
         // INCLUDE CODE HERE TO START YOUR GAME
-        // …..
-        // …..
-        // …..
+        let viewController = GameViewController()
+        viewController.startGame()
         // END OF CODE TO START GAME
     }
     

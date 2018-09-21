@@ -1,11 +1,3 @@
-//
-//  GameScene.swift
-//  FlappyBird
-//
-//  Created by Nate Murray on 6/2/14.
-//  Copyright (c) 2014 Fullstack.io. All rights reserved.
-//
-
 import SpriteKit
 
 class GameScene: SKScene, SKPhysicsContactDelegate{
@@ -21,6 +13,7 @@ class GameScene: SKScene, SKPhysicsContactDelegate{
     var canRestart = Bool()
     var scoreLabelNode:SKLabelNode!
     var score = NSInteger()
+    var firstReset = NSInteger()
     
     let birdCategory: UInt32 = 1 << 0
     let worldCategory: UInt32 = 1 << 1
@@ -30,6 +23,7 @@ class GameScene: SKScene, SKPhysicsContactDelegate{
     override func didMove(to view: SKView) {
         
         canRestart = true
+        firstReset = 0
         
         // setup physics
         self.physicsWorld.gravity = CGVector( dx: 0.0, dy: -5.0 )
@@ -197,20 +191,14 @@ class GameScene: SKScene, SKPhysicsContactDelegate{
         // Reset _canRestart
         canRestart = false
         
-        //  Converted to Swift 4 by Swiftify v4.1.6809 - https://objectivec2swift.com/
-        if Skillz.skillzInstance().tournamentIsInProgress {
-            // The game ended and it was in a Skillz tournament,
-            // so report the score and go back to Skillz.
-            Skillz.skillzInstance().displayTournamentResults(withScore: score as NSNumber, withCompletion: {
-                // Reset score
-                self.score = 0
-                self.scoreLabelNode.text = String(self.score)
-                
-                // Restart animation
-                self.moving.speed = 1
-                print("Reporting score to Skillz…")
-            })
-        }
+        // Reset score
+        self.score = 0
+        self.scoreLabelNode.text = String(self.score)
+        
+        // Restart animation
+        self.moving.speed = 1
+        
+       
     }
     override func touchesBegan(_ touches: Set<UITouch>, with event: UIEvent?) {
         if moving.speed > 0  {
@@ -252,11 +240,20 @@ class GameScene: SKScene, SKPhysicsContactDelegate{
                 self.removeAction(forKey: "flash")
                 self.run(SKAction.sequence([SKAction.repeat(SKAction.sequence([SKAction.run({
                     self.backgroundColor = SKColor(red: 1, green: 0, blue: 0, alpha: 1.0)
-                    }),SKAction.wait(forDuration: TimeInterval(0.05)), SKAction.run({
-                        self.backgroundColor = self.skyColor
-                        }), SKAction.wait(forDuration: TimeInterval(0.05))]), count:4), SKAction.run({
-                            self.canRestart = true
-                            })]), withKey: "flash")
+                }),SKAction.wait(forDuration: TimeInterval(0.05)), SKAction.run({
+                    self.backgroundColor = self.skyColor
+                }), SKAction.wait(forDuration: TimeInterval(0.05))]), count:4), SKAction.run({
+                    self.canRestart = true
+                })]), withKey: "flash")
+                
+                if Skillz.skillzInstance().tournamentIsInProgress {
+                    // The game ended and it was in a Skillz tournament,
+                    // so report the score and go back to Skillz.
+                    Skillz.skillzInstance().displayTournamentResults(withScore: score as NSNumber, withCompletion: {
+                        
+                        print("Reporting score to Skillz…")
+                    })
+                }
             }
         }
     }
